@@ -6,6 +6,7 @@
 using namespace std;
 
 #define integer uint8_t
+#define file_path "./base de dados.csv"
 
 int password_code(const char *password)
 {
@@ -24,17 +25,23 @@ int password_code(const char *password)
 void write_file()
 {
     char bn;
+    ifstream rf(file_path, ios::in);
     ofstream wf("data.dat", ios::out | ios::binary);
     if(!wf.is_open())
     {   
         cout<<"Não foi possível abrir o arquivo para escrita"<<endl;
         return; 
     }
-    for(int j =0; j<46 ; j++)
+    else if(!rf.is_open())
+    {
+        cout<<"Não foi possível abrir o arquivo para leitura"<<endl;
+        return;
+    }
+    else while(!rf.eof())
     {
         uint16_t bn = 10; //Quebra de linha
         string mensagem;
-        getline(cin, mensagem);
+        getline(rf, mensagem);
         uint16_t charvalue = 0;
         for(int i = 0; i<mensagem.size(); i++)
         {
@@ -72,17 +79,24 @@ void read_file()
 
 int main()
 {
-    //TODO: leitura de chave
     string password;
     cout<<"Insira a chave de codificação: "<<endl; 
     getline(std::cin, password);
-    //TODO: função de criação de seed apartir da chave
     int seed = password_code(password.c_str());   
     cout<<(int)seed<<endl;
-    //TODO: número aleatório
-    srand(seed);
-    //TODO: escrita de arquivo em binário
-    //write_file();
-    //TODO: leitura de arquivo em binário
-    read_file();
+    int controler = 0;
+    while(controler != -1)
+    {
+        cout<<"Digite 0 para codificar, e digite 1 para decodificar e -1 para sair:"<<endl; 
+        cin>>controler;
+        if(controler == 1)
+        {
+            srand(seed);
+            read_file();
+        }else if(controler == 0)
+        {
+            srand(seed);
+            write_file();
+        }
+    }
 }
